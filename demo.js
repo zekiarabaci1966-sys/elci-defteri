@@ -36,7 +36,7 @@ async function git(s){const e=bul(s);if(!e)return null;e.scrollIntoView({block:'
 async function dokun(s){const e=await git(s);if(!e)return;P.classList.add('bas');await bekle(250);P.classList.remove('bas');e.click();await bekle(700);}
 async function yazarakDoldur(s,metin){const e=await git(s);if(!e)return;e.focus();
  for(const c of metin){e.value+=c;e.dispatchEvent(new Event('input'));await bekle(c==='\n'?260:45);}}
-window.prompt=()=>dmPrompt;window.confirm=()=>true;let dmPrompt='';
+let dmPrompt='';
 window.open=()=>null; // WhatsApp'ı gerçekten açmasın
 
 // ---------- senaryo ----------
@@ -50,6 +50,7 @@ async function oyna(){adimNo=0;
  dmPrompt="Ali Bey'in bahçesi";
  await yaz('Önce yeni bir bahçe ekleyelim…',2200);
  await dokun('#bahceEkle');
+ await yazarakDoldur('#s2Gir',dmPrompt);await bekle(400);await dokun('#s2T');
  await yaz('"Ali Bey\'in bahçesi" eklendi, kendi rengini aldı.<br>Ekran yerinde kaldı.',3200);
  // Ahmet Bey yoklama
  await yaz('Şimdi sabah yoklaması: Ahmet Bey\'in bahçesine dokunuyoruz.',2600);
