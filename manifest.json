@@ -1,6 +1,6 @@
 {
- "name": "Elçi Defteri (Bahçe kartlı)",
- "short_name": "Elçi Kartlı",
+ "name": "Elçi Defteri",
+ "short_name": "Elçi Defteri",
  "start_url": "./",
  "display": "standalone",
  "background_color": "#f8fafc",
