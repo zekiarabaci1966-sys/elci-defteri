@@ -221,6 +221,7 @@ tr.bBas td{font-size:12px;font-weight:800;color:#14532d;padding-top:8px}
 </div>
 
 <div class="ort" id="ort"><div class="pen" id="pen"></div></div>
+<div class="ort" id="ort2" style="z-index:15;align-items:center;padding:16px"><div class="pen" id="pen2" style="border-radius:18px"></div></div>
 <div class="bildir" id="bildir"></div>
 <input type="file" id="yedekDosya" accept=".json,application/json" style="display:none">
 
@@ -421,7 +422,7 @@ function ciz(){
    +'<div class="sat top"><span>Toplam verilen</span><b>'+P2(il.reduce((s,a)=>s+a.tutar,0))+' TL</b></div>'
   :'<div class="not">'+(filtre.isci||filtre.donem==='hepsi'?'Seçiminize uyan kayıt yok.':'Bu hafta avans ya da ödeme verilmedi.')+'</div>';
  $('islem').querySelectorAll('[data-ac]').forEach(x=>x.onclick=e=>{e.preventDefault();puantaj(+x.dataset.ac);});
- $('islem').querySelectorAll('[data-isil]').forEach(b=>b.onclick=()=>{if(!confirm('Bu kayıt silinsin mi?'))return;V.avans=V.avans.filter(a=>a.id!=b.dataset.isil);kaydet();ciz();});
+ $('islem').querySelectorAll('[data-isil]').forEach(b=>b.onclick=()=>onay('Bu kayıt silinsin mi?',()=>{V.avans=V.avans.filter(a=>a.id!=b.dataset.isil);kaydet();ciz();}));
 
  // --- CÜZDAN: kazancım (elçi payı)
  {const bg=bugun(),kH=kazanc(pazartesi(bg),gunEkle(pazartesi(bg),6)),kA=kazanc(new Date(bg.getFullYear(),bg.getMonth(),1),new Date(bg.getFullYear(),bg.getMonth()+1,0)),
@@ -482,7 +483,7 @@ function kilitSor(sonra){
   tamam:k=>{if(hsh(k)!==V.ayar.pin)return 'Yanlış şifre, tekrar deneyin';kilitAcik=true;kapat();ciz();sonra&&sonra();},
   unuttum:()=>pinPad({baslik:'Kurtarma kodu',alt:'Şifre koyarken kâğıda yazdığınız 6 rakamlı kodu girin',uzun:6,
    tamam:k=>{if(hsh(k)!==V.ayar.kurtar)return 'Kod yanlış';delete V.ayar.pin;delete V.ayar.kurtar;kilitAcik=true;kaydet();kapat();ciz();
-    alert('Şifre kaldırıldı. Ayarlar\'dan yeni şifre koyabilirsiniz.');}})});}
+    bilgi('Şifre kaldırıldı. Ayarlar\'dan yeni şifre koyabilirsiniz.');}})});}
 function sifreKoy(not){
  pinPad({baslik:'Yeni şifre',alt:not||'4 rakam seçin (doğum yılı gibi kolay tahmin edilen olmasın)',uzun:4,
   tamam:k1=>{setTimeout(()=>pinPad({baslik:'Şifreyi tekrar girin',alt:'Aynı 4 rakamı bir daha',uzun:4,
@@ -493,12 +494,12 @@ function sifreKoy(not){
      '<div style="text-align:center;font-size:40px;font-weight:800;letter-spacing:6px;background:#fef3c7;border:2px dashed #a16207;border-radius:14px;padding:14px;margin:8px 0;color:#111827">'+kur+'</div>'+
      '<label style="display:flex;gap:10px;align-items:center;font-size:16px;font-weight:800;margin:12px 0"><input type="checkbox" id="yazdim" style="width:26px;height:26px"> Kodu kâğıda yazdım</label>'+
      '<button class="tam ana" id="kTamam">Tamam</button>');
-    $('kTamam').onclick=()=>{if(!$('yazdim').checked){alert('Lütfen önce kodu kâğıda yazın ve kutuyu işaretleyin.');return;}kapat();ciz();bildir('Şifre açık — HAFTA, PARA ve Ayarlar kilitli');};}}),10);}});}
+    $('kTamam').onclick=()=>{if(!$('yazdim').checked){bilgi('Lütfen önce kodu kâğıda yazın ve kutuyu işaretleyin.');return;}kapat();ciz();bildir('Şifre açık — HAFTA, PARA ve Ayarlar kilitli');};}}),10);}});}
 $('duneGit').onclick=()=>{secili=gunEkle(bugun(),-1);hafta=pazartesi(secili);ciz();window.scrollTo({top:0});bildir('Dünün yoklaması: '+tarihAd(secili));};
 $('geriBahce').onclick=()=>{acik=null;ciz();window.scrollTo({top:0});};
-function bahceEkleSor(){const ad=prompt('Bahçe ya da tesis adı (örn. Ahmet Bey\'in bahçesi, Kozan Paketleme Tesisi):');
- if(ad&&ad.trim()){const b={id:yeniId(),ad:ad.trim(),renk:bosRenk(V.bahce)};V.bahce.push(b);kaydet();acik=null;yeniB=b.id;ciz();bildir(b.ad+' eklendi');
-  setTimeout(()=>{const k=document.querySelector('[data-b="'+b.id+'"]');if(k)k.scrollIntoView({block:'nearest',behavior:'smooth'});yeniB=null;},50);}}
+function bahceEkleSor(){sor2({baslik:'Yeni bahçe / tesis',alt:'Adını yazın. Örnek: Ahmet Bey\'in bahçesi, Kozan Paketleme Tesisi',giris:true,ipucu:'Bahçenin adı',tamam:'Ekle',sonra:ad=>{
+ {const b={id:yeniId(),ad:ad.trim(),renk:bosRenk(V.bahce)};V.bahce.push(b);kaydet();acik=null;yeniB=b.id;ciz();bildir(b.ad+' eklendi');
+  setTimeout(()=>{const k=document.querySelector('[data-b="'+b.id+'"]');if(k)k.scrollIntoView({block:'nearest',behavior:'smooth'});yeniB=null;},50);}}});}
 let yeniB=null;
 $('ilkBahce').onclick=bahceEkleSor;
 $('fIsci').onchange=e=>{filtre.isci=e.target.value;ciz();};
@@ -510,6 +511,18 @@ $('geri').onclick=()=>{hafta=gunEkle(hafta,-7);ciz();};
 $('ileri').onclick=()=>{hafta=gunEkle(hafta,7);ciz();};
 
 // --- pencere
+// KENDİ SORU PENCERELERİMİZ: telefonun prompt/confirm/alert pencereleri bazı telefonlarda (WhatsApp içinden açılınca vb.) hiç çıkmıyor
+function sor2(o){const p=$('pen2');
+ p.innerHTML='<h3>'+o.baslik+'</h3>'+(o.alt?'<div class="alt2" style="font-size:14.5px">'+o.alt+'</div>':'')+
+  (o.giris?'<div class="alan"><input id="s2Gir" autocomplete="off" value="'+esc(o.deger||'')+'" placeholder="'+esc(o.ipucu||'')+'"></div><div id="s2H" style="color:#b91c1c;font-weight:800;min-height:20px;font-size:14px"></div>':'')+
+  '<div class="'+(o.iptal===null?'':'ikili')+'">'+(o.iptal===null?'':'<button class="ikinci" id="s2V">'+(o.iptal||'Vazgeç')+'</button>')+
+  '<button class="'+(o.tehlike?'kirmizi':'ana')+(o.iptal===null?' tam':'')+'" id="s2T">'+(o.tamam||'Tamam')+'</button></div>';
+ $('ort2').classList.add('ac');const kap=()=>$('ort2').classList.remove('ac');
+ if(o.iptal!==null)$('s2V').onclick=kap;
+ $('s2T').onclick=()=>{if(o.giris){const v=$('s2Gir').value.trim();if(!v){$('s2H').textContent='Lütfen yazın.';return;}kap();o.sonra&&o.sonra(v);}else{kap();o.sonra&&o.sonra();}};
+ if(o.giris){const g=$('s2Gir');g.onkeydown=e=>{if(e.key==='Enter')$('s2T').click();};setTimeout(()=>g.focus(),50);}}
+const bilgi=metin=>sor2({baslik:metin,iptal:null});
+const onay=(metin,sonra,tehlike)=>sor2({baslik:metin,tamam:'Evet',iptal:'Vazgeç',tehlike:tehlike!==false,sonra});
 function ac(html){$('pen').innerHTML=html;$('ort').classList.add('ac');}
 function kapat(){$('ort').classList.remove('ac');}
 $('ort').onclick=e=>{if(e.target.id==='ort'||e.target.hasAttribute('data-kapat'))kapat();};
@@ -523,9 +536,9 @@ function isciForm(id){const i=id?V.isci.find(x=>x.id===id):{ad:'',tel:'',bahce:a
   (id?'':'<button class="tam ikinci" id="fKaydetYeni">Kaydet ve bir tane daha ekle</button>'));
  $('fBahce').value=i.bahce;
  setTimeout(()=>$('fAd').focus(),50);
- const kay=yeni=>{const ad=$('fAd').value.trim();if(!ad){alert('Adı yazın.');return;}
+ const kay=(yeni,zorla)=>{const ad=$('fAd').value.trim();if(!ad){bilgi('Adı yazın.');return;}
   const ayni=V.isci.find(x=>x.id!==id&&kucuk(x.ad)===kucuk(ad));
-  if(ayni&&!confirm('"'+ayni.ad+'" adında bir işçi zaten var ('+bahceAd(ayni.bahce)+'). Yine de eklensin mi?'))return;
+  if(ayni&&!zorla){sor2({baslik:'"'+esc(ayni.ad)+'" adında bir işçi zaten var ('+esc(bahceAd(ayni.bahce))+'). Yine de eklensin mi?',tamam:'Evet, ekle',sonra:()=>kay(yeni,true)});return;}
   const bh=+$('fBahce').value;
   if(id){const tasindi=i.bahce!==bh;i.ad=ad;i.tel=$('fTel').value.trim();i.bahce=bh;if(tasindi)bildir(ad+' → '+bahceAd(bh)+' (eski günleri değişmez)');}
   else V.isci.push({id:yeniId(),ad,tel:$('fTel').value.trim(),bahce:bh,eklenme:anah(secili)});
@@ -627,9 +640,9 @@ function puantaj(id){const i=V.isci.find(x=>x.id===id);if(!pAy)pAy=new Date(seci
   if(pMod==='hafta'){hafta=gunEkle(hafta,7*n);ciz();}else pAy=new Date(pAy.getFullYear(),pAy.getMonth()+n,1);puantaj(id);});
  $('avV').onclick=()=>{const v=sayi($('avT').value);if(!(v>0)){bildir('Tutar yazın');return;}
   V.avans.push({id:yeniId(),isci:id,t:anah(secili),tutar:v});kaydet();ciz();puantaj(id);bildir('Avans yazıldı');};
- $('pen').querySelectorAll('[data-av]').forEach(b=>b.onclick=()=>{if(!confirm('Bu avans silinsin mi?'))return;V.avans=V.avans.filter(a=>a.id!=b.dataset.av);kaydet();ciz();puantaj(id);});
+ $('pen').querySelectorAll('[data-av]').forEach(b=>b.onclick=()=>onay('Bu avans silinsin mi?',()=>{V.avans=V.avans.filter(a=>a.id!=b.dataset.av);kaydet();ciz();puantaj(id);}));
  $('duz').onclick=()=>isciForm(id);
- $('cik').onclick=()=>{if(!i.pasif&&!confirm(i.ad+' listeden çıkarılsın mı? Eski kayıtları silinmez.'))return;i.pasif=!i.pasif;kaydet();ciz();kapat();};}
+ $('cik').onclick=()=>{const yap=()=>{i.pasif=!i.pasif;kaydet();ciz();kapat();};if(i.pasif)yap();else onay(esc(i.ad)+' listeden çıkarılsın mı? Eski kayıtları silinmez.',yap);};}
 
 $('avansB').onclick=()=>{const ak=aktifler();
  ac('<h3>Avans / ödeme ver</h3><div class="alt2">'+tarihAd(secili)+' tarihine yazılır.</div>'+
@@ -638,7 +651,7 @@ $('avansB').onclick=()=>{const ak=aktifler();
   '<div class="ikili"><button class="ikinci" data-kapat>Vazgeç</button><button class="ana" id="avK2">Kaydet</button></div>');
  setTimeout(()=>$('avAra').focus(),50);
  $('avK2').onclick=()=>{const ad=kucuk($('avAra').value.trim());const l=ak.filter(i=>kucuk(i.ad)===ad);
-  if(l.length!==1){alert(l.length?'Bu isimde birden fazla işçi var; işçinin kendi penceresinden verin.':'Listeden bir işçi seçin.');return;}
+  if(l.length!==1){bilgi(l.length?'Bu isimde birden fazla işçi var; işçinin kendi penceresinden verin.':'Listeden bir işçi seçin.');return;}
   const v=sayi($('avT2').value);if(!(v>0)){bildir('Tutar yazın');return;}
   V.avans.push({id:yeniId(),isci:l[0].id,t:anah(secili),tutar:v});kaydet();ciz();kapat();bildir('Avans yazıldı — listede');};};
 
@@ -670,20 +683,19 @@ $('ayarB').onclick=()=>{if(kilitli()){kilitSor(()=>$('ayarB').onclick());return;
   (V.isci.some(i=>i.pasif)?'<h3 style="margin-top:20px">Listeden çıkarılanlar</h3>'+sirala(V.isci.filter(i=>i.pasif)).map(i=>'<div class="sat"><span>'+esc(i.ad)+'</span><button class="sil" style="color:#14532d" data-geri="'+i.id+'">geri al</button></div>').join(''):'')+
   '<button class="tam ikinci" data-kapat>Kapat</button>');
  if(V.ayar.pin){$('sDeg').onclick=sifreKoy;
-  $('sKal').onclick=()=>{if(!confirm('Şifre kaldırılsın mı? Para sayfaları herkese açık olur.'))return;delete V.ayar.pin;delete V.ayar.kurtar;kaydet();ciz();$('ayarB').onclick();bildir('Şifre kaldırıldı');};
+  $('sKal').onclick=()=>onay('Şifre kaldırılsın mı? Para sayfaları herkese açık olur.',()=>{delete V.ayar.pin;delete V.ayar.kurtar;kaydet();ciz();$('ayarB').onclick();bildir('Şifre kaldırıldı');});
   $('sKilit').onclick=()=>{kilitAcik=false;sayfa='bugun';acik=null;kapat();ciz();bildir('Kilitlendi');};}
  else $('sKoy').onclick=sifreKoy;
  $('tK').onclick=()=>{V.ayar.tarife={GN:sayi($('tGN').value),BD:sayi($('tBD').value),PK:sayi($('tPK').value)};V.ayar.elci=sayi($('tEl').value);V.ayar.yg=sayi($('tYG').value);kaydet();ciz();kapat();bildir('Tarife kaydedildi');};
- $('pen').querySelectorAll('[data-bad]').forEach(b=>b.onclick=()=>{const x=V.bahce.find(y=>y.id==b.dataset.bad);const ad=prompt('Yeni adı:',x.ad);if(ad&&ad.trim()){x.ad=ad.trim();kaydet();ciz();$('ayarB').onclick();}});
- $('pen').querySelectorAll('[data-bsil]').forEach(b=>b.onclick=()=>{if(!confirm('Bu bahçe silinsin mi?'))return;V.bahce=V.bahce.filter(x=>x.id!=b.dataset.bsil);kaydet();ciz();$('ayarB').onclick();});
+ $('pen').querySelectorAll('[data-bad]').forEach(b=>b.onclick=()=>{const x=V.bahce.find(y=>y.id==b.dataset.bad);sor2({baslik:'Bahçenin yeni adı',giris:true,deger:x.ad,tamam:'Kaydet',sonra:ad=>{x.ad=ad;kaydet();ciz();$('ayarB').onclick();}});});
+ $('pen').querySelectorAll('[data-bsil]').forEach(b=>b.onclick=()=>onay('Bu bahçe silinsin mi?',()=>{V.bahce=V.bahce.filter(x=>x.id!=b.dataset.bsil);kaydet();ciz();$('ayarB').onclick();}));
  $('yAl').onclick=()=>{const b=new Blob([JSON.stringify(V,null,1)],{type:'application/json'}),u=URL.createObjectURL(b),x=document.createElement('a');
   x.href=u;x.download='elci-kartli-yedek-'+anah(bugun())+'.json';document.body.appendChild(x);x.click();x.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);bildir('Yedek indirildi');};
  $('yYk').onclick=()=>$('yedekDosya').click();
  $('pen').querySelectorAll('[data-geri]').forEach(b=>b.onclick=()=>{V.isci.find(i=>i.id==b.dataset.geri).pasif=false;kaydet();ciz();$('ayarB').onclick();});};
 $('yedekDosya').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
  r.onload=()=>{try{const y=JSON.parse(r.result);if(!y.ayar||!y.isci)throw 0;
-  if(!confirm('Yedek yüklenirse telefondaki şimdiki kayıtların yerine geçer. Devam edilsin mi?'))return;
-  V=tamamla(y);kaydet();kapat();ciz();bildir('Yedek yüklendi');}catch(x){alert('Bu dosya bir Elçi Defteri yedeği değil.');}};
+  onay('Yedek yüklenirse telefondaki şimdiki kayıtların yerine geçer. Devam edilsin mi?',()=>{V=tamamla(y);kaydet();kapat();ciz();bildir('Yedek yüklendi');});}catch(x){bilgi('Bu dosya bir Elçi Defteri yedeği değil.');}};
  r.readAsText(f);e.target.value='';};
 
 let bt;function bildir(m){const b=$('bildir');b.textContent=m;b.classList.add('ac');clearTimeout(bt);bt=setTimeout(()=>b.classList.remove('ac'),2200);}
