@@ -1,5 +1,5 @@
 // İnternet yokken de açılsın diye dosyaları telefonda saklar
-const AD = 'elci-kartli-v4';
+const AD = 'elci-kartli-v5';
 const DOSYALAR = ['./', 'index.html', 'manifest.json', 'ikon-192.png', 'ikon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(AD).then(c => c.addAll(DOSYALAR))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
