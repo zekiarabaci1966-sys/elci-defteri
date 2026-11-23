@@ -20,6 +20,7 @@ button{cursor:pointer;border:0}
 .ust{background:#14532d;color:#fff;padding:calc(12px + env(safe-area-inset-top)) 12px 14px}
 html{background:#14532d}
 @media(min-width:600px){html{background:#eef2f6}}
+html::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#14532d;z-index:99999;pointer-events:none}
 .ust .ad{font-size:13px;font-weight:700;letter-spacing:1px}
 .ust1{display:flex;justify-content:space-between;align-items:center}
 .ayarDug{background:rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:7px 12px;font-size:14px;font-weight:800}
